@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./CommandManager.css";
 
 function CommandManager() {
@@ -7,16 +7,32 @@ function CommandManager() {
   const [commands, setCommands] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
 
-  const addOrUpdateCommand = () => {
-    if (!command || !link) return;
+  useEffect(() => {
+    const saved = localStorage.getItem('jarvisCommands');
+    if (saved) {
+      try {
+        setCommands(JSON.parse(saved));
+      } catch (err) {
+        console.warn('Unable to parse saved commands', err);
+      }
+    }
+  }, []);
 
+  useEffect(() => {
+    localStorage.setItem('jarvisCommands', JSON.stringify(commands));
+  }, [commands]);
+
+  const addOrUpdateCommand = () => {
+    if (!command.trim() || !link.trim()) return;
+
+    const payload = { name: command.trim(), url: link.trim() };
     if (editingIndex !== null) {
       const updated = [...commands];
-      updated[editingIndex] = { name: command, url: link };
+      updated[editingIndex] = payload;
       setCommands(updated);
       setEditingIndex(null);
     } else {
-      setCommands([...commands, { name: command, url: link }]);
+      setCommands([...commands, payload]);
     }
 
     setCommand("");
@@ -82,6 +98,9 @@ function CommandManager() {
               <span className="cmd-name">{cmd.name}</span>
               <span className="cmd-url">{cmd.url}</span>
               <div className="actions">
+                <button className="open" onClick={() => window.open(cmd.url, '_blank')}>
+                  Open
+                </button>
                 <button className="edit" onClick={() => editCommand(index)}>Edit</button>
                 <button className="delete" onClick={() => deleteCommand(index)}>Delete</button>
               </div>

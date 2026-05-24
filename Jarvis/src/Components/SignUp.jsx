@@ -5,6 +5,7 @@ import JarvisPopup from './JarvisPopup'; // ✅ import Jarvis popup
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   const [formData, setFormData] = useState({
     name: '',
@@ -25,7 +26,7 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/signup', {
+      const res = await fetch(`${API_BASE}/api/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -49,7 +50,7 @@ const SignUp = () => {
 
   const handleJarvisClose = () => {
     setShowJarvis(false);
-    navigate('/signIn'); // ✅ Redirect after closing Jarvis popup
+    navigate('/signin'); // ✅ Redirect after closing Jarvis popup
   };
 
   return (
@@ -102,7 +103,7 @@ const SignUp = () => {
         </form>
 
         <p className="signin-footer">
-          Already have an account? <Link to="/signIn">Sign In</Link>
+          Already have an account? <Link to="/signin">Sign In</Link>
         </p>
       </div>
 
